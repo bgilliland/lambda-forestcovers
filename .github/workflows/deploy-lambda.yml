@@ -37,5 +37,5 @@ jobs:
           AWS_REGION: us-east-1  # Change to your AWS region
         run: |
           aws lambda update-function-code \
-            --function-name my-lambda-function \
+            --function-name forest-cover-lambda \
             --zip-file fileb://lambda_function.zip
