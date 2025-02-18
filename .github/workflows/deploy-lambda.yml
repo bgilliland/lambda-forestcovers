@@ -13,7 +13,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install UV
+      - name: Install uv
         uses: astral-sh/setup-uv@v5
         with:
           # Install specific version of uv
@@ -22,7 +22,7 @@ jobs:
       - name: "Set up Python"
         uses: actions/setup-python@v5
         with:
-          python-version-file: ".python-version"
+          python-version-file: "pyproject.toml"
 
       - name: Install the project
         run: uv sync --all-extras --dev
