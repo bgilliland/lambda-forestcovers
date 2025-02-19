@@ -1,13 +1,21 @@
 import json
 import pandas as pd
-from sklearn.datasets import fetch_covtype
+import boto3
+
 
 def lambda_handler(event, context):
-    # Load the Forest CoverType dataset
-    data = fetch_covtype(as_frame=True)
     
-    # Convert to DataFrame
-    df = data.frame
+    s3_client = boto3.client("s3")
+    bucket = 'forestcover-ml'
+    key = 'data/train.csv'
+
+    obj = s3_client.get_object(
+        Bucket = bucket,
+        Key = key
+    )
+    
+    # Load the Forest CoverType dataset
+    df = pd.read_csv(obj["Body"],low_memory=False)
     
     # Print the first few rows
     print(df.head())
