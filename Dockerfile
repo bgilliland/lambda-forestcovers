@@ -1,4 +1,4 @@
-FROM amazon/aws-lambda-python:3.11 AS builder
+FROM amazon/aws-lambda-python:3.11-arm64 AS builder
 
 ENV UV_PYTHON_DOWNLOADS=0
 
@@ -16,15 +16,15 @@ ENV PATH="/root/.local/bin/:$PATH"
 
 # Sync the project into a new environment, using the frozen lockfile
 WORKDIR /app
+ADD . /app
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-    uv sync --frozen --no-install-project --no-dev
-ADD . /app
-RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --frozen --no-dev
+    uv sync --frozen --no-install-project --no-dev 
+    # --mount=type=cache,target=/root/.cache/uv \
+    # uv sync --frozen --no-dev
 
-FROM amazon/aws-lambda-python:3.11
+FROM amazon/aws-lambda-python:3.11-arm64 AS runtime
 
 WORKDIR /var/task
 
@@ -34,4 +34,4 @@ COPY --from=builder --chown=lambda:lambda /app /var/task
 # Place executables in the environment at the front of the path
 ENV PATH="/var/task/.venv/bin:$PATH"
 
-CMD ["uv", "run", "lambda_function.lambda_handler"]
+CMD ["lambda_function.lambda_handler"]
