@@ -3,7 +3,7 @@ FROM amazon/aws-lambda-python:3.11-arm64 AS builder
 ENV UV_PYTHON_DOWNLOADS=0
 
 # The installer requires curl (and certificates) to download the release archive
-RUN microndf install -y tar gzip curl ca-certificates && microndf clean all
+RUN microdnf install -y tar gzip curl ca-certificates && microdnf clean all
 
 # Download the latest installer
 ADD https://astral.sh/uv/install.sh /uv-installer.sh
