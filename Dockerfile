@@ -32,6 +32,6 @@ FROM public.ecr.aws/lambda/python:3.11 AS runtime
 COPY --from=builder ${LAMBDA_TASK_ROOT} ${LAMBDA_TASK_ROOT}
 
 # Copy the application code.
-COPY . ${LAMBDA_TASK_ROOT}/app
+COPY . ${LAMBDA_TASK_ROOT}
 
-CMD ["app.lambda_function.lambda_handler"]
+CMD ["lambda_function.lambda_handler"]
