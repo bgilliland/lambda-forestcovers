@@ -30,8 +30,11 @@ WORKDIR /var/task
 
 # Copy the application from the builder
 COPY --from=builder --chown=lambda:lambda /app /var/task
+COPY --from=builder --chown=lambda:lambda /root/.local /var/task/.local
 
 # Place executables in the environment at the front of the path
-ENV PATH="/var/task/.venv/bin:$PATH"
+# ENV PATH="/var/task/.venv/bin:$PATH"
+ENV PATH="/var/task/.local/bin:$PATH"
+ENV PYTHONPATH="/var/task/.local/lib/python3.11/site-packages:$PYTHONPATH"
 
 CMD ["lambda_function.lambda_handler"]
