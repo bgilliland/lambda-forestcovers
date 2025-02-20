@@ -1,9 +1,13 @@
-name: Deploy AWS Lambda with UV
+name: Deploy AWS Lambda job with Docker Container
 
 on:
   push:
     branches:
       - main
+
+permissions:
+  id-token: write # This is required for requesting the JWT
+  contents: read  # This is required for actions/checkout
 
 jobs:
   deploy:
@@ -13,29 +17,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # - name: Install uv
-      #   uses: astral-sh/setup-uv@v5
-      #   with:
-      #     # Install specific version of uv
-      #     version: "0.6.1"
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_GITHUB_ROLE }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
-      # - name: "Set up Python"
-      #   uses: actions/setup-python@v5
-      #   with:
-      #     python-version-file: "pyproject.toml"
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
 
-      # - name: Install the project
-      #   run: uv sync --all-extras --dev
-
-      - name: Zip the deployment package
-        run: zip -r lambda_function.zip lambda_function.py
-
-      - name: Deploy to AWS Lambda
+      - name: Build, tag, push image to AWS ECR lambda-forestcovers
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: us-east-1  # Change to your AWS region
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: lambda-forestcovers
         run: |
-          aws lambda update-function-code \
-            --function-name forest-cover-lambda \
-            --zip-file fileb://lambda_function.zip
+          DOCKER_BUILDKIT=1 docker build -t $ECR_REGISTRY/$ECR_REPOSITORY .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY
