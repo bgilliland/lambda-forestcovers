@@ -34,4 +34,4 @@ COPY --from=builder --chown=lambda:lambda /app /var/task
 # Place executables in the environment at the front of the path
 ENV PATH="/var/task/.venv/bin:$PATH"
 
-CMD ["uv", "run", "lambda_function.py"]
+CMD ["lambda_function.lambda_handler"]
