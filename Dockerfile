@@ -1,9 +1,9 @@
-FROM amazon/aws-lambda-python:3.11-arm64 AS builder
+FROM amazon/aws-lambda-python:3.11 AS builder
 
 ENV UV_PYTHON_DOWNLOADS=0
 
 # The installer requires curl (and certificates) to download the release archive
-RUN microdnf install -y tar gzip curl ca-certificates && microdnf clean all
+RUN yum install -y tar gzip curl ca-certificates && yum clean all
 
 # Download the latest installer
 ADD https://astral.sh/uv/install.sh /uv-installer.sh
@@ -24,7 +24,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     # --mount=type=cache,target=/root/.cache/uv \
     # uv sync --frozen --no-dev
 
-FROM amazon/aws-lambda-python:3.11-arm64 AS runtime
+FROM amazon/aws-lambda-python:3.11 AS runtime
 
 WORKDIR /var/task
 
