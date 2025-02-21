@@ -34,4 +34,7 @@ COPY --from=builder ${LAMBDA_TASK_ROOT} ${LAMBDA_TASK_ROOT}
 # Copy the application code.
 COPY . ${LAMBDA_TASK_ROOT}
 
+# Set PYTHONPATH to include the src directory
+ENV PYTHONPATH="${LAMBDA_TASK_ROOT}/src:${PYTHONPATH}"
+
 CMD ["lambda_function.lambda_handler"]
